@@ -1,0 +1,93 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+
+using namespace std;
+
+
+// Simple function to analyze sentiment based on keywords
+string analyzeSentiment(const string& input) {
+    vector<string> positiveWords = {"happy", "good", "great", "awesome", "love"};
+    vector<string> negativeWords = {"sad", "bad", "angry", "hate", "upset"};
+
+
+    int positiveCount = 0, negativeCount = 0;
+
+
+    string word;
+    for (char c : input) {
+        if (isalnum(c) || c == ' ') {
+            word += tolower(c);
+        } else if (c == ' ') {
+            if (find(positiveWords.begin(), positiveWords.end(), word) != positiveWords.end()) {
+                positiveCount++;
+            } else if (find(negativeWords.begin(), negativeWords.end(), word) != negativeWords.end()) {
+                negativeCount++;
+            }
+            word.clear();
+        }
+    }
+
+
+    // Final check for the last word
+    if (find(positiveWords.begin(), positiveWords.end(), word) != positiveWords.end()) {
+        positiveCount++;
+    } else if (find(negativeWords.begin(), negativeWords.end(), word) != negativeWords.end()) {
+        negativeCount++;
+    }
+
+
+    if (positiveCount > negativeCount) {
+        return "positive";
+    } else if (negativeCount > positiveCount) {
+        return "negative";
+    } else {
+        return "neutral";
+    }
+}
+
+
+// Simple chatbot that responds to greetings and asks about the user's day
+void chatbot() {
+    string input;
+    cout << "Hello! I'm your chatbot. How can I help you today?" << endl;
+
+
+    while (true) {
+        cout << "You: ";
+        getline(cin, input);
+
+
+        // Convert input to lowercase to make comparison easier
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+
+        if (input == "exit") {
+            cout << "Goodbye!" << endl;
+            break;
+        } else if (input.find("how are you") != string::npos) {
+            cout << "Chatbot: I'm doing great! How about you?" << endl;
+        } else if (input.find("hello") != string::npos || input.find("hi") != string::npos) {
+            cout << "Chatbot: Hello! How can I assist you today?" << endl;
+        } else if (input.find("how is your day") != string::npos) {
+            cout << "Chatbot: My day is going well! How about yours?" << endl;
+        } else {
+            string sentiment = analyzeSentiment(input);
+            if (sentiment == "positive") {
+                cout << "Chatbot: I'm glad you're feeling positive!" << endl;
+            } else if (sentiment == "negative") {
+                cout << "Chatbot: I'm sorry to hear you're feeling down. Is there anything I can do to help?" << endl;
+            } else {
+                cout << "Chatbot: I see! How can I help further?" << endl;
+            }
+        }
+    }
+}
+
+
+int main() {
+    chatbot();
+    return 0;
+}
